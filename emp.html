@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phone Number Authentication</title>
+  <script src="https://www.googleapis.com/identitytoolkit/v3/recaptcha/v1/recaptcha.js"></script>
+</head>
+<body>
+  <h1>Phone Number Authentication</h1>
+  <div id="phone-number-container">
+    <label for="phone-number">Enter your phone number:</label>
+    <input type="tel" id="phone-number" placeholder="Phone number (e.g., +1234567890)">
+    <button id="send-code-button">Send Verification Code</button>
+  </div>
+  <div id="verification-code-container" style="display: none;">
+    <label for="verification-code">Enter verification code:</label>
+    <input type="text" id="verification-code" placeholder="Verification Code">
+    <button id="verify-code-button">Verify Code</button>
+  </div>
+  <div id="recaptcha-container"></div>
+  <script src="phone_auth.js"></script>
+</body>
+</html>
