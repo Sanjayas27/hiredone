@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up Form</title>
+  <script src="main.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Briem+Hand:wght@100..900&display=swap" rel="stylesheet">
+  <style>  
+  body{
+    background-image: url(images/wave.png);
+    background-repeat: no-repeat;
+  }
+       #header{
+     margin-top: 0%;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    border-radius: 10px; 
+    font-family: "Briem Hand", cursive;
+}
+#header h1{
+    margin-left: 50px;
+    color: black;
+}
+#header h1 span{
+    color: #38d39f;
+}
+nav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 0px;
+   
+}
+
+nav ul li{
+    display: inline-block;
+    list-style: none;
+    margin: 10px 20px;
+}
+nav ul li a{
+    color: black;
+    text-decoration: none;
+    font-size: 15px;
+    position: relative;
+}
+nav ul li:not(:last-child) a:after {
+    content: '';
+    width: 0px;
+    height: 3px;
+    background: #38d39f;
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    transition: 0.5s;
+}
+nav ul li a:hover::after{
+    width: 100%;
+}
+span{
+    color: #38d39f;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+    .container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 20px;
+  background-color: #38d39f;
+  font-family: "Briem Hand", cursive;
+}
+
+h2 {
+  text-align: center;
+}
+
+form input,
+form select,
+form button {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+form button {
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: black;
+  color: white;
+}
+#sign {
+    display: inline-block; /* Ensures the anchor behaves like a block element */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: 2px solid #38d39f; /* Black outline */
+    color: black; /* Text color */
+    text-decoration: none; /* Remove underline */
+}
+
+#sign:hover {
+    background-color: #38d39f; /* Background color on hover */
+    color: white; /* Text color on hover */
+}
+
+  </style>
+  <!-- <script>
+     document.getElementById('signupForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+  // Collect form data
+  const formData = {
+    name: document.getElementById('name').value,
+    email: document.getElementById('email').value,
+    userId: document.getElementById('userId').value,
+    password: document.getElementById('password').value,
+    confirmPassword: document.getElementById('confirmPassword').value,
+    phone: document.getElementById('phone').value,
+    state: document.getElementById('state').value,
+    district: document.getElementById('district').value,
+    profession: document.getElementById('profession').value,
+    file: document.getElementById('fileUpload').files[0].name
+  };
+  console.log(formData);
+  // Here you can send the form data to the server for further processing
+});
+
+  </script> -->
+</head>
+<body>
+  <div id="header">
+    <h1>Hire<span>On</span></h1>
+    <nav>
+        <ul>
+            <li>
+                <a href="contact1.html">Contact</a>
+            </li>
+            <li>
+                <a href="members.html">Members</a>
+            </li>
+            <li>
+              <a href="#about" id="sign">Sign Out</a>
+          </li>
+        </ul>
+    </nav>
+    </div>
+  <div class="container">
+    <h2>Sign Up</h2>
+    <form id="signupForm">
+      <input type="text" id="name" placeholder="Name" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="text" id="userId" placeholder="User ID" required>
+      <input type="password" id="password" placeholder="Create Password" required>
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+      <input type="tel" id="phone" placeholder="Phone Number" required>
+      <select id="stateSelect" onchange="populateDistricts()">
+        <option disabled selected value="">Location</option>
+      </select>
+      <select id="districtSelect" disabled>
+        <option disabled selected value="">Select a district</option>
+        <!-- Options will be added dynamically using JavaScript -->
+      </select>
+      <select id="profession" required>
+        <option value="">Select Profession</option>
+        <option value="Painting">Painting</option>
+        <option value="Plumber">Plumber</option>
+        <option value="Electrician">Electrician</option>
+        <!-- Add more profession options here -->
+      </select>
+      <select id="typeSelect">
+        <option value="Employee">Employee</option>
+        <option value="Employer">Employer</option>
+      </select>
+      <label for="fileUpload">Upload Your Photo:</label>
+      <input type="file" id="fileUpload" class="file" accept=".pdf,.doc,.docx" >
+      <label for="fileUpload">Upload Your Government ID Card:</label>
+      <input type="file" id="fileUpload1" accept=".pdf,.doc,.docx" >
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+import { getDatabase,ref,set,get,child } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAdJQyg21E1O4YogrlSusyZsvqlOdjQwWs",
+  authDomain: "workease-39efc.firebaseapp.com",
+  projectId: "workease-39efc",
+  storageBucket: "workease-39efc.appspot.com",
+  messagingSenderId: "227355095295",
+  appId: "1:227355095295:web:30a2dc4ac7fdc1cd529cca",
+  measurementId: "G-TRBXGKKWS7"
+};
+
+const app = initializeApp(firebaseConfig);
+
+// Get a Firestore instance
+const db = getFirestore(app);
+
+// Function to handle form submission
+async function submitFunc(e) {
+  e.preventDefault();
+
+  // Get form data
+  const formData = {
+    name: document.getElementById('name').value,
+    email: document.getElementById('email').value,
+    userId: document.getElementById('userId').value,
+    password: document.getElementById('password').value,
+    phone: document.getElementById('phone').value,
+    state: document.getElementById('stateSelect').value,
+    district: document.getElementById('districtSelect').value,
+    profession: document.getElementById('profession').value,
+    type: document.getElementById('typeSelect').value
+  };
+
+  try {
+    // Add a new document to the "users" collection
+    await addDoc(collection(db, 'users'), formData);
+    
+    // Alert success message
+    alert('Account created successfully!!');
+
+    // Redirect user based on type
+    if (formData.type === 'Employee') {
+      localStorage.setItem('user', JSON.stringify(formData)); // Store data as string
+      window.location.href = 'employee.html';
+    } else {
+      window.location.href = 'MAIN.html';
+    }
+  } catch (error) {
+    console.error('Error adding document: ', error);
+  }
+}
+
+// Add event listener to the form
+document.getElementById('signupForm').addEventListener('submit', submitFunc);
+  </script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+  <script src="./firebaseconfig.js"></script> -->
+</body>
+</html>

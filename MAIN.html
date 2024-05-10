@@ -6,12 +6,14 @@
     <title>WorkEase</title>
     <link rel="stylesheet" href="style.css">
     <script src="main.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Briem+Hand:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 </head>
 <body>
+
     <div id="header1">
       
         <nav>
@@ -42,17 +44,34 @@
                 <option disabled selected value="">Select a district</option>
                 <!-- Options will be added dynamically using JavaScript -->
               </select>
-            <button type="submit" onclick="searchEmployees()">Search</button>
+            <button id="searchButton">Search</button>
           </div>
           <div id="searchResults">
           </div>
         </div>
-          <script>
-            // Simulated list of keywords
-            const keywords = ["painting","electrician","plumber"];
-            
-            // Function to update the autocomplete dropdown
-            function autocomplete(input, arr) {
+<script type="module">
+    // Import necessary Firebase modules
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js';
+
+// Initialize Firebase app with your configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAdJQyg21E1O4YogrlSusyZsvqlOdjQwWs",
+  authDomain: "workease-39efc.firebaseapp.com",
+  projectId: "workease-39efc",
+  storageBucket: "workease-39efc.appspot.com",
+  messagingSenderId: "227355095295",
+  appId: "1:227355095295:web:30a2dc4ac7fdc1cd529cca",
+  measurementId: "G-TRBXGKKWS7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Function to search and display employees
+const keywords = ["painting","electrician","plumber"];
+
+function autocomplete(input, arr) {
                 let currentFocus;
                 input.addEventListener("input", function(e) {
                     let val = this.value;
@@ -84,65 +103,80 @@
                     closeAllLists();
                 });
             }
-            
-            // Initialize autocomplete for the search bar
-            autocomplete(document.getElementById("myInput"), keywords);
-            </script>
-  <script>
-                const employees = [
-  { name: 'Sidharth s kumar', job: 'painting', state: 'Kerala', district: 'pathanamthitta'},
-  { name: 'Sonu', job: 'painting', state: 'Maharashtra', district: 'Mumbai'},
-  { name: 'Kumar', job: 'painting', state: 'Delhi', district: 'New Delhi' },
-  // Add more employee data as needed
-];
 
-function searchEmployees() {
-  const job = document.getElementById('myInput').value.toLowerCase();
-  const state = document.getElementById('stateSelect').value.toLowerCase();
-  const district = document.getElementById('districtSelect').value.toLowerCase();
+async function searchEmployees() {
+    console.log('yes')
+  try {
+    // Get search criteria from input fields
+    const job = document.getElementById('myInput').value;
+    const state = document.getElementById('stateSelect').value;
+    const district = document.getElementById('districtSelect').value;
+    console.log(state)
+    console.log(job)
 
-  const searchResults = employees.filter(employee => {
-      return employee.job.toLowerCase().includes(job) &&
-          employee.state.toLowerCase().includes(state) &&+
-          employee.district.toLowerCase().includes(district);
-  });
+    // Fetch all users from Firestore
+    const usersSnapshot = await getDocs(collection(db, 'users'));
 
-  displaySearchResults(searchResults);
+    console.log(usersSnapshot)
+
+    // Filter and sort the users based on search criteria
+    const searchResults = [];
+    usersSnapshot.forEach(doc => {
+      const userData = doc.data();
+    //   if (userData.profession == job) {
+        searchResults.push(userData);
+    //   }
+    });
+
+    console.log(searchResults)
+
+    // Display search results
+    displaySearchResults(searchResults);
+  } catch (error) {
+    console.error("Error searching employees: ", error);
+  }
 }
 
+// Function to display search results
 function displaySearchResults(results) {
   const searchResultsContainer = document.getElementById('searchResults');
   searchResultsContainer.innerHTML = '';
 
   if (results.length === 0) {
-      searchResultsContainer.innerHTML = '<p>No matching employees found.</p>';
+    searchResultsContainer.innerHTML = '<p>No matching employees found.</p>';
   } else {
-      results.forEach(employee => {
-          const employeeElement = document.createElement('div');
-          employeeElement.classList.add('employee');
-          employeeElement.innerHTML = `
-          <img src='https://firebasestorage.googleapis.com/v0/b/workease-39efc.appspot.com/o/bg2.png?alt=media&token=499fb008-e3c8-4c4e-9325-d209f7b4fac5'></img>
-              <h3>${employee.name}</h3>
-              <p1><strong>Job:</strong> ${employee.job}</p1> 
-              <p2><strong>Rating:</strong>5*</p2>
-              <p3>${employee.state},${employee.district}</p3> 
-    
-              `;
+    results.forEach(employee => {
+      const employeeElement = document.createElement('div');
+      employeeElement.classList.add('employee');
+      employeeElement.innerHTML = `
+        <img src='https://firebasestorage.googleapis.com/v0/b/workease-39efc.appspot.com/o/bg2.png?alt=media&token=499fb008-e3c8-4c4e-9325-d209f7b4fac5'></img>
+        <h3>${employee.name}</h3>
+        <p1><strong>Job:</strong> ${employee.job}</p1> 
+        <p2><strong>Rating:</strong>5*</p2>
+        <p3>${employee.state}, ${employee.district}</p3>`;
 
-// Add event listener to open profile page on click
-employeeElement.addEventListener('click', function() {
-    // Pass employee details to the profile page using query parameters
-    const queryParams = new URLSearchParams();
-    queryParams.set('name', employee.name);
-    queryParams.set('job', employee.job);
-    queryParams.set('state', employee.state);
-    queryParams.set('district', employee.district);
-    window.location.href = 'profile.html';
-});
-          searchResultsContainer.appendChild(employeeElement);
+      // Add event listener to open profile page on click
+      employeeElement.addEventListener('click', function() {
+        // Pass employee details to the profile page using query parameters
+        const queryParams = new URLSearchParams();
+        queryParams.set('name', employee.name);
+        queryParams.set('job', employee.job);
+        queryParams.set('state', employee.state);
+        queryParams.set('district', employee.district);
+        window.location.href = 'profile.html?' + queryParams.toString();
       });
+
+      searchResultsContainer.appendChild(employeeElement);
+    });
   }
 }
+
+// Initialize autocomplete for the search bar
+autocomplete(document.getElementById("myInput"), keywords);
+
+// Add event listener to search button
+document.getElementById('searchButton').addEventListener('click', ()=>{searchEmployees()});
+
 </script>
 </body>
 </html>
