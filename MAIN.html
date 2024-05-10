@@ -25,10 +25,12 @@
                     <a href="#profile">My profile</a>
                 </li>
                 <li>
-                    <a href="#signout" id="sign">Sign Out</a>
+                    <button id="sign">Sign Out</button>
                 </li>
             </ul>
         </nav>
+
+
         </div>
         <div class="box">
         <div id="text"><h1>Hire<span>On</span></h1></div>
@@ -44,12 +46,20 @@
                 <option disabled selected value="">Select a district</option>
                 <!-- Options will be added dynamically using JavaScript -->
               </select>
-            <button id="searchButton">Search</button>
+            <button id="searchButton" type="submit">Search</button>
           </div>
           <div id="searchResults">
           </div>
         </div>
 <script type="module">
+    const userData = JSON.parse(localStorage.getItem('user'));
+    console.log(userData)
+
+    // Check if user data exists and if it's of type 'employee' or 'employer'
+    if (!userData || (userData.type !== 'Employer')) {
+        // Redirect to the signup page
+        window.location.href = 'SignUp.html';
+    }
     // Import necessary Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
 import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js';
@@ -123,9 +133,9 @@ async function searchEmployees() {
     const searchResults = [];
     usersSnapshot.forEach(doc => {
       const userData = doc.data();
-    //   if (userData.profession == job) {
+      if (userData.profession == job,userData.type != 'Employer') {
         searchResults.push(userData);
-    //   }
+      }
     });
 
     console.log(searchResults)
@@ -151,7 +161,7 @@ function displaySearchResults(results) {
       employeeElement.innerHTML = `
         <img src='https://firebasestorage.googleapis.com/v0/b/workease-39efc.appspot.com/o/bg2.png?alt=media&token=499fb008-e3c8-4c4e-9325-d209f7b4fac5'></img>
         <h3>${employee.name}</h3>
-        <p1><strong>Job:</strong> ${employee.job}</p1> 
+        <p1><strong>Job:</strong> ${employee.profession}</p1> 
         <p2><strong>Rating:</strong>5*</p2>
         <p3>${employee.state}, ${employee.district}</p3>`;
 
@@ -176,6 +186,14 @@ autocomplete(document.getElementById("myInput"), keywords);
 
 // Add event listener to search button
 document.getElementById('searchButton').addEventListener('click', ()=>{searchEmployees()});
+
+document.getElementById('sign').addEventListener('click', function() {
+            // Clear local storage variable
+            localStorage.removeItem('user');
+            
+            // Redirect to the sign in page
+            window.location.href = 'sign in.html';
+        });
 
 </script>
 </body>

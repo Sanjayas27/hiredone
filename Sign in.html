@@ -15,7 +15,7 @@
 			<img src="images/bg.svg">
 		</div>
 		<div class="login-content">
-			<form action="Sign in.html">
+			<div>
 				<img src="images/avatar.svg">
 				<h2 class="title">Welcome</h2>
            		<div class="input-div one">
@@ -23,8 +23,8 @@
            		   		<i class="fas fa-user"></i>
            		   </div>
            		   <div class="div">
-           		   		<h5>Username</h5>
-           		   		<input type="text" class="input">
+           		   		<h5>UserId</h5>
+           		   		<input type="text" class="input" id="userId">
            		   </div>
            		</div>
            		<div class="input-div pass">
@@ -33,14 +33,62 @@
            		   </div>
            		   <div class="div">
            		    	<h5>Password</h5>
-           		    	<input type="password" class="input">
+           		    	<input type="password" class="input" id="pass">
             	   </div>
             	</div>
-            	<a href="#">Forgot Password?</a>
-            	<input type="submit" class="btn" value="Login">
-            </form>
+            	<a href="SignUp.html">Sign Up?</a>
+            	<input id="sub" class="btn" type='button' value="Login">
+            </div>
         </div>
     </div>
-    <script src="app.js"></script>
+	<script type="module">
+		// On the destination page (home page)
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+		import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js';
+		
+		const firebaseConfig = {
+			apiKey: "AIzaSyAdJQyg21E1O4YogrlSusyZsvqlOdjQwWs",
+			authDomain: "workease-39efc.firebaseapp.com",
+			projectId: "workease-39efc",
+			storageBucket: "workease-39efc.appspot.com",
+			messagingSenderId: "227355095295",
+			appId: "1:227355095295:web:30a2dc4ac7fdc1cd529cca",
+			measurementId: "G-TRBXGKKWS7"
+			};
+		// Initialize Firebase
+		const app = initializeApp(firebaseConfig);
+		const db = getFirestore(app);
+
+		const fetchData = async () => {
+			try {
+				const userId = document.getElementById('userId').value;
+				const pass = document.getElementById('pass').value;
+
+				const querySnapshot = await getDocs(query(collection(db, "users"), where("password", "==", pass)));
+				const temp = [];
+				querySnapshot.forEach((doc) => {
+					temp.push(doc.data());
+				});
+				console.log(temp[0]);
+
+				if (!temp[0]) {
+					alert('Username-password combination does not exist!');
+				} else {
+					if (temp[0].type == 'Employee') {
+						localStorage.setItem('user', JSON.stringify(temp[0])); // Store data as string
+						window.location.href = 'employee.html';
+					} else {
+						localStorage.setItem('user', JSON.stringify(temp[0])); // Store data as string
+						window.location.href = 'MAIN.html';
+					}
+				}
+			} catch (error) {
+				console.error("Error fetching data: ", error);
+			}
+		};
+
+		document.getElementById('sub').addEventListener('click', fetchData);
+	</script>
 </body>
+
 </html>

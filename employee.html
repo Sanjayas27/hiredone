@@ -1,15 +1,43 @@
-<html>
-    <head>
-        <title>Employee Home page</title>
-    </head>
-    <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="employee.css">
+    <title>User Profile</title>
+</head>
+<body>
+          
+    <nav>
+        <ul>
+            <li>
+                <a href="index.html">Home</a>
+            </li>
+            <li>
+                <a href="#profile">My profile</a>
+            </li>
+            <li>
+                <button id="sign">Sign Out</button>
+            </li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div id="userProfile">
+            <h2>Edit Profile</h2>
+            <button id="updateProfileBtn">Update Profile</button>
+            <div id="userProfileData">
+            </div>
+        </div>
+        
+    </div>
 
-        <script type="module">
-            // On the destination page (home page)
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-            import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js';
-            
-            const firebaseConfig = {
+    <script type="module">
+        // Retrieve user data from local storage
+        import { doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js';
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+        import { getDatabase,ref,set,get,child } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+        const firebaseConfig = {
             apiKey: "AIzaSyAdJQyg21E1O4YogrlSusyZsvqlOdjQwWs",
             authDomain: "workease-39efc.firebaseapp.com",
             projectId: "workease-39efc",
@@ -17,28 +45,101 @@
             messagingSenderId: "227355095295",
             appId: "1:227355095295:web:30a2dc4ac7fdc1cd529cca",
             measurementId: "G-TRBXGKKWS7"
-            };
+        };
 
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
 
-            const userId = localStorage.getItem('user');
-            console.log(userId); // Output: exampleUser
+        // Get a Firestore instance
+        const db = getFirestore(app);
 
-            const fetchData = async () => {
+        const userData = JSON.parse(localStorage.getItem('user'));
+
+        // Check if user data exists and if it's of type 'employee' or 'employer'
+        if (!userData || (userData.type !== 'Employee')) {
+            // Redirect to the signup page
+            window.location.href = 'signup.html';
+        }
+
+
+        // Update the HTML content with user data
+        const userProfileDiv = document.getElementById('userProfileData');
+
+        if (userData) {
+            const userProfileHTML = `
+                <p><strong>Name:</strong> ${userData.name}</p>
+                <p><strong>User ID:</strong> ${userData.userId}</p>
+                <p><strong>Email:</strong> ${userData.email}</p>
+                <p><strong>Phone:</strong> ${userData.phone}</p>
+                <p><strong>State:</strong> ${userData.state}</p>
+                <p><strong>District:</strong> ${userData.district}</p>
+                <p><strong>Profession:</strong> ${userData.profession}</p>
+                <p><strong>Type:</strong> ${userData.type}</p>
+            `;
+            userProfileDiv.innerHTML = userProfileHTML;
+        } else {
+            userProfileDiv.innerHTML = '<p>User data not found.</p>';
+        }
+
+        document.getElementById('sign').addEventListener('click', function() {
+            // Clear local storage variable
+            localStorage.removeItem('user');
+            
+            // Redirect to the sign in page
+            window.location.href = 'sign in.html';
+        });
+
+        const updateProfileBtn = document.getElementById('updateProfileBtn');
+
+        updateProfileBtn.addEventListener('click', () => {
+            // Retrieve user data from localStorage
+            const userData = JSON.parse(localStorage.getItem('user'));
+
+            // Prompt the user to update their profile data
+            const updatedName = prompt('Enter your updated name:', userData.name);
+            const updatedEmail = prompt('Enter your updated email:', userData.email);
+            const updatedPhone = prompt('Enter your updated phone number:', userData.phone);
+
+            // Update user data locally
+            userData.name = updatedName || userData.name;
+            userData.email = updatedEmail || userData.email;
+            userData.phone = updatedPhone || userData.phone;
+
+            // Update user data in Firebase
+            updateUserData(userData);
+        });
+
+
+        // Update user data in Firebase
+// Update user data in Firebase
+        async function updateUserData(userData) {
             try {
-                const snapshot = await db.collection("users").where("userId", "==", userId).get();
-                snapshot.forEach((doc) => {
-                console.log(doc.id, " => ", doc.data());
+                // Get the document reference for the user using userId
+                const userDocRef = doc(db, 'users', userData.userId);
+
+                // Update the document with the new user data
+                await updateDoc(userDocRef, {
+                    name: userData.name,
+                    email: userData.email,
+                    phone: userData.phone,
+                    // Add other fields as needed
                 });
+
+                // Update user data in localStorage
+                localStorage.setItem('user', JSON.stringify(userData));
+
+                // Display success message
+                alert('Profile updated successfully!');
             } catch (error) {
-                console.error("Error fetching data: ", error);
+                console.error('Error updating profile:', error);
+
+                // Display error message
+                alert('Failed to update profile. Please try again later.');
             }
-            };
+        }
 
-            fetchData();
 
-        </script>
-    </body>
+
+
+    </script>
+</body>
 </html>

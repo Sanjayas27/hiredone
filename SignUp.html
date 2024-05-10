@@ -150,9 +150,6 @@ form button:hover {
             <li>
                 <a href="members.html">Members</a>
             </li>
-            <li>
-              <a href="#about" id="sign">Sign Out</a>
-          </li>
         </ul>
     </nav>
     </div>
@@ -189,11 +186,12 @@ form button:hover {
       <input type="file" id="fileUpload1" accept=".pdf,.doc,.docx" >
       <button type="submit">Sign Up</button>
     </form>
+    <a href="Sign in.html">Sign In?</a>
   </div>
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
 import { getDatabase,ref,set,get,child } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc,setDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAdJQyg21E1O4YogrlSusyZsvqlOdjQwWs",
@@ -229,7 +227,12 @@ async function submitFunc(e) {
 
   try {
     // Add a new document to the "users" collection
-    await addDoc(collection(db, 'users'), formData);
+    const userId = document.getElementById('userId').value;
+
+    // Add the document with userId as the document ID
+    await setDoc(doc(db, 'users', userId), {
+      ...formData,
+    });
     
     // Alert success message
     alert('Account created successfully!!');
@@ -239,6 +242,7 @@ async function submitFunc(e) {
       localStorage.setItem('user', JSON.stringify(formData)); // Store data as string
       window.location.href = 'employee.html';
     } else {
+      localStorage.setItem('user', JSON.stringify(formData));
       window.location.href = 'MAIN.html';
     }
   } catch (error) {
