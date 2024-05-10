@@ -64,7 +64,7 @@
 				const userId = document.getElementById('userId').value;
 				const pass = document.getElementById('pass').value;
 
-				const querySnapshot = await getDocs(query(collection(db, "users"), where("password", "==", pass)));
+				const querySnapshot = await getDocs(query(collection(db, "users"), where("userId", "==", userId), where("password", "==", pass)));
 				const temp = [];
 				querySnapshot.forEach((doc) => {
 					temp.push(doc.data());
@@ -79,6 +79,7 @@
 						window.location.href = 'employee.html';
 					} else {
 						localStorage.setItem('user', JSON.stringify(temp[0])); // Store data as string
+						console.log(temp[0])
 						window.location.href = 'MAIN.html';
 					}
 				}
